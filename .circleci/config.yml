@@ -2,9 +2,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: rust
+      - image: rustlang/rust:nightly
     steps:
       - checkout
+      - run:
+          name: Install
+          command: cargo install
       - run:
           name: Build
           command: cargo build
