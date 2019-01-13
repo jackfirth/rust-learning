@@ -5,9 +5,9 @@ jobs:
       - image: rust
     steps:
       - checkout
-      - build:
+      - run:
           name: Build
           command: cargo build
-      - test:
+      - run:
           name: Test
           command: cargo test
