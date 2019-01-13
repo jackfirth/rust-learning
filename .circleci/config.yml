@@ -7,10 +7,10 @@ jobs:
       - checkout
       - run:
           name: Install
-          command: cargo install
+          command: cargo install --path .
       - run:
           name: Build
-          command: cargo build
+          command: cargo build --path .
       - run:
           name: Test
-          command: cargo test
+          command: cargo test --path .
