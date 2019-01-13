@@ -6,11 +6,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install
-          command: cargo install --path .
-      - run:
           name: Build
-          command: cargo build --path .
+          command: cargo build
       - run:
           name: Test
-          command: cargo test --path .
+          command: cargo test
