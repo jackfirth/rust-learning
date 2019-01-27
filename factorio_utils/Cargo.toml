@@ -1,5 +1,5 @@
 [package]
-name = "hello_world"
+name = "factorio_utils"
 version = "0.1.0"
 authors = ["Jack Firth <jackhfirth@gmail.com>"]
 edition = "2018"

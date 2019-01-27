@@ -188,24 +188,33 @@ enum SplitterDirection {
 }
 
 fn main() -> Result<()> {
-    let blueprint = BlueprintString("0eNrtmj1vo0AQhv9KtDVE+8mC6yuuuCrtKYqwjRJ0DlgYRxdF/u8Hxk5ie5y8g+GKKFUEmMe7OzP78cQvYrpYZ8sqL+q7aVn+EZOXtzsrMfn97rJ9ls/Koru9yu+LdNHeq5+XmZiIvM4eRSCK9LG9qtJ8ITaByIt59ldM1OY2EFlR53Wede9vL57vivXjNKuaD7y+uaqbd+8f6nCLCMSyXDVvlUX7VQ0ptIF4bv6oaLMJTjAaxeiPKOaVMltXT9n8XFPMDqKajs7zKpt1Dy2BtNyGWaphjkvRFCU6iFI4e0jzItzF87ST8tp1sOTaHfbTEGzPYR+gCVjM7a6kKAkWTdUxjvroCKCSaLtkx4wBpmIyo0OmopjcaoiAdhom0wLttJykMfukcUg+KrhkmrmAbLGmqBE4Q6hdVhmgpR5jGpIYUUS4fizZczL+CZOpP4+/husphiOk4XpSEofCBaU0DoUrSlkcCq83YTemEgiTA5O+q08FtDKCW6nJbKLqSHveTHrUc08hY9aKqfczlD6eochhhSsqIseAqlIjsVAlVKSoETCKMwL+7ABQ05TRvdgKmf6NYUUu2cHlMZvKXmN7scMTODng+LoVUWlMZkXEZAJzt/GsvbIBiHGfLeTJoJIDkHA3A/rzNLASh1oYip+HdksNAtU4VMJQwzy5AdOXtUwmsMm0jrnMIn3nnaTcLlcNMgFYz1wbgc2bjZlM4JBhWcerhDzVSma4Y5LCWqLa5WPL8kgwnO61AThhU2bAcQuIPuU6bs3QbsA5LoYWFRHvmNhSboPOIU3eKadALNJptmju3ZTrYp5Oy3V9tV7eV+k8u/r180fzgaesWnV7i9hrHatEev0mnmTbuG+F9XUV1iVmyPfyDglS1T1PDNBs9C20vpTQ8meFlv4WWueEFjCu+xU+hPZbbLEF7LdwscWQZWoEWabHkGVmDFlmx5BljjVZn7cb5jLHhZs4P7iJi4eXZskIcs/IEWSZGlqW6RHcjRnB3djB3Q2rktw5d+Mvk1e4uzF+BHdj4hHcDUddyRHUFe5ueMfw/a4asrkMgYV7ITOCF+pnhg1iy3GPxfBC0QheyF/shWwvEwz9W/idteKYO0//TmFwgXWRCNLDiCAzjAiy/0EE3QAiSFHYcPubp4/YzcO0yaOn7G7POfNFm39bmz2t".to_string());
-    println!("Starting...");
-    let bytes: Vec<u8> = decode(&blueprint.base64_string()).unwrap();
-    println!("Base64 decoded to bytes successfully");
-    let mut deflater = ZlibDecoder::new(&bytes[..]);
-    println!("Bytes passed to deflater successfully");
-    let mut decompressed = String::new();
-    deflater.read_to_string(&mut decompressed).unwrap();
-    let bp: BlueprintObject = serde_json::from_str(&decompressed)?;
-    println!("{}", decompressed);
-    println!("Decoded blueprint into {:?}", bp);
+    let blueprint: EncodedBlueprint = EncodedBlueprint("0eNrtmj1vo0AQhv9KtDVE+8mC6yuuuCrtKYqwjRJ0DlgYRxdF/u8Hxk5ie5y8g+GKKFUEmMe7OzP78cQvYrpYZ8sqL+q7aVn+EZOXtzsrMfn97rJ9ls/Koru9yu+LdNHeq5+XmZiIvM4eRSCK9LG9qtJ8ITaByIt59ldM1OY2EFlR53Wede9vL57vivXjNKuaD7y+uaqbd+8f6nCLCMSyXDVvlUX7VQ0ptIF4bv6oaLMJTjAaxeiPKOaVMltXT9n8XFPMDqKajs7zKpt1Dy2BtNyGWaphjkvRFCU6iFI4e0jzItzF87ST8tp1sOTaHfbTEGzPYR+gCVjM7a6kKAkWTdUxjvroCKCSaLtkx4wBpmIyo0OmopjcaoiAdhom0wLttJykMfukcUg+KrhkmrmAbLGmqBE4Q6hdVhmgpR5jGpIYUUS4fizZczL+CZOpP4+/husphiOk4XpSEofCBaU0DoUrSlkcCq83YTemEgiTA5O+q08FtDKCW6nJbKLqSHveTHrUc08hY9aKqfczlD6eochhhSsqIseAqlIjsVAlVKSoETCKMwL+7ABQ05TRvdgKmf6NYUUu2cHlMZvKXmN7scMTODng+LoVUWlMZkXEZAJzt/GsvbIBiHGfLeTJoJIDkHA3A/rzNLASh1oYip+HdksNAtU4VMJQwzy5AdOXtUwmsMm0jrnMIn3nnaTcLlcNMgFYz1wbgc2bjZlM4JBhWcerhDzVSma4Y5LCWqLa5WPL8kgwnO61AThhU2bAcQuIPuU6bs3QbsA5LoYWFRHvmNhSboPOIU3eKadALNJptmju3ZTrYp5Oy3V9tV7eV+k8u/r180fzgaesWnV7i9hrHatEev0mnmTbuG+F9XUV1iVmyPfyDglS1T1PDNBs9C20vpTQ8meFlv4WWueEFjCu+xU+hPZbbLEF7LdwscWQZWoEWabHkGVmDFlmx5BljjVZn7cb5jLHhZs4P7iJi4eXZskIcs/IEWSZGlqW6RHcjRnB3djB3Q2rktw5d+Mvk1e4uzF+BHdj4hHcDUddyRHUFe5ueMfw/a4asrkMgYV7ITOCF+pnhg1iy3GPxfBC0QheyF/shWwvEwz9W/idteKYO0//TmFwgXWRCNLDiCAzjAiy/0EE3QAiSFHYcPubp4/YzcO0yaOn7G7POfNFm39bmz2t".to_string());
+    println!("{:?}", blueprint.decode()?);
     Ok(())
 }
 
-struct BlueprintString(String);
+struct EncodedBlueprint(String);
 
-impl BlueprintString {
-    fn base64_string(&self) -> &str {
+impl EncodedBlueprint {
+
+    fn get_base64(&self) -> &str {
         &self.0[1..]
+    }
+
+    fn get_version_byte(&self) -> u8 {
+        self.0.as_bytes()[0]
+    }
+
+    fn as_string(&self) -> &String {
+        &self.0
+    }
+
+    fn decode(&self) -> Result<BlueprintObject> {
+        let bytes: Vec<u8> = decode(self.get_base64()).unwrap();
+        let mut deflater = ZlibDecoder::new(&bytes[..]);
+        let mut decompressed = String::new();
+        deflater.read_to_string(&mut decompressed).unwrap();
+        let bp: BlueprintObject = serde_json::from_str(&decompressed)?;
+        Ok(bp)
     }
 }
