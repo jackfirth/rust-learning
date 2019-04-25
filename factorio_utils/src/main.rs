@@ -1,5 +1,7 @@
-use base64::decode;
+use std::io::Write;
+use flate2::Compression;
 use flate2::read::ZlibDecoder;
+use flate2::write::ZlibEncoder;
 use serde_derive::{Serialize, Deserialize};
 use serde_json::Result;
 use std::collections::HashMap;
@@ -188,14 +190,30 @@ enum SplitterDirection {
 }
 
 fn main() -> Result<()> {
-    let blueprint: EncodedBlueprint = EncodedBlueprint("0eNrtmj1vo0AQhv9KtDVE+8mC6yuuuCrtKYqwjRJ0DlgYRxdF/u8Hxk5ie5y8g+GKKFUEmMe7OzP78cQvYrpYZ8sqL+q7aVn+EZOXtzsrMfn97rJ9ls/Koru9yu+LdNHeq5+XmZiIvM4eRSCK9LG9qtJ8ITaByIt59ldM1OY2EFlR53Wede9vL57vivXjNKuaD7y+uaqbd+8f6nCLCMSyXDVvlUX7VQ0ptIF4bv6oaLMJTjAaxeiPKOaVMltXT9n8XFPMDqKajs7zKpt1Dy2BtNyGWaphjkvRFCU6iFI4e0jzItzF87ST8tp1sOTaHfbTEGzPYR+gCVjM7a6kKAkWTdUxjvroCKCSaLtkx4wBpmIyo0OmopjcaoiAdhom0wLttJykMfukcUg+KrhkmrmAbLGmqBE4Q6hdVhmgpR5jGpIYUUS4fizZczL+CZOpP4+/husphiOk4XpSEofCBaU0DoUrSlkcCq83YTemEgiTA5O+q08FtDKCW6nJbKLqSHveTHrUc08hY9aKqfczlD6eochhhSsqIseAqlIjsVAlVKSoETCKMwL+7ABQ05TRvdgKmf6NYUUu2cHlMZvKXmN7scMTODng+LoVUWlMZkXEZAJzt/GsvbIBiHGfLeTJoJIDkHA3A/rzNLASh1oYip+HdksNAtU4VMJQwzy5AdOXtUwmsMm0jrnMIn3nnaTcLlcNMgFYz1wbgc2bjZlM4JBhWcerhDzVSma4Y5LCWqLa5WPL8kgwnO61AThhU2bAcQuIPuU6bs3QbsA5LoYWFRHvmNhSboPOIU3eKadALNJptmju3ZTrYp5Oy3V9tV7eV+k8u/r180fzgaesWnV7i9hrHatEev0mnmTbuG+F9XUV1iVmyPfyDglS1T1PDNBs9C20vpTQ8meFlv4WWueEFjCu+xU+hPZbbLEF7LdwscWQZWoEWabHkGVmDFlmx5BljjVZn7cb5jLHhZs4P7iJi4eXZskIcs/IEWSZGlqW6RHcjRnB3djB3Q2rktw5d+Mvk1e4uzF+BHdj4hHcDUddyRHUFe5ueMfw/a4asrkMgYV7ITOCF+pnhg1iy3GPxfBC0QheyF/shWwvEwz9W/idteKYO0//TmFwgXWRCNLDiCAzjAiy/0EE3QAiSFHYcPubp4/YzcO0yaOn7G7POfNFm39bmz2t".to_string());
-    println!("{:?}", blueprint.decode()?);
+    let encoded: EncodedBlueprint = EncodedBlueprint::from("0eNrtmj1vo0AQhv9KtDVE+8mC6yuuuCrtKYqwjRJ0DlgYRxdF/u8Hxk5ie5y8g+GKKFUEmMe7OzP78cQvYrpYZ8sqL+q7aVn+EZOXtzsrMfn97rJ9ls/Koru9yu+LdNHeq5+XmZiIvM4eRSCK9LG9qtJ8ITaByIt59ldM1OY2EFlR53Wede9vL57vivXjNKuaD7y+uaqbd+8f6nCLCMSyXDVvlUX7VQ0ptIF4bv6oaLMJTjAaxeiPKOaVMltXT9n8XFPMDqKajs7zKpt1Dy2BtNyGWaphjkvRFCU6iFI4e0jzItzF87ST8tp1sOTaHfbTEGzPYR+gCVjM7a6kKAkWTdUxjvroCKCSaLtkx4wBpmIyo0OmopjcaoiAdhom0wLttJykMfukcUg+KrhkmrmAbLGmqBE4Q6hdVhmgpR5jGpIYUUS4fizZczL+CZOpP4+/husphiOk4XpSEofCBaU0DoUrSlkcCq83YTemEgiTA5O+q08FtDKCW6nJbKLqSHveTHrUc08hY9aKqfczlD6eochhhSsqIseAqlIjsVAlVKSoETCKMwL+7ABQ05TRvdgKmf6NYUUu2cHlMZvKXmN7scMTODng+LoVUWlMZkXEZAJzt/GsvbIBiHGfLeTJoJIDkHA3A/rzNLASh1oYip+HdksNAtU4VMJQwzy5AdOXtUwmsMm0jrnMIn3nnaTcLlcNMgFYz1wbgc2bjZlM4JBhWcerhDzVSma4Y5LCWqLa5WPL8kgwnO61AThhU2bAcQuIPuU6bs3QbsA5LoYWFRHvmNhSboPOIU3eKadALNJptmju3ZTrYp5Oy3V9tV7eV+k8u/r180fzgaesWnV7i9hrHatEev0mnmTbuG+F9XUV1iVmyPfyDglS1T1PDNBs9C20vpTQ8meFlv4WWueEFjCu+xU+hPZbbLEF7LdwscWQZWoEWabHkGVmDFlmx5BljjVZn7cb5jLHhZs4P7iJi4eXZskIcs/IEWSZGlqW6RHcjRnB3djB3Q2rktw5d+Mvk1e4uzF+BHdj4hHcDUddyRHUFe5ueMfw/a4asrkMgYV7ITOCF+pnhg1iy3GPxfBC0QheyF/shWwvEwz9W/idteKYO0//TmFwgXWRCNLDiCAzjAiy/0EE3QAiSFHYcPubp4/YzcO0yaOn7G7POfNFm39bmz2t");
+    let blueprint: BlueprintObject = encoded.decode()?;
+    println!("DECODED FORM: {:?}", blueprint);
+    println!("ENCODED FORM: {:?}", EncodedBlueprint::encode(&blueprint).as_string());
     Ok(())
 }
 
 struct EncodedBlueprint(String);
 
 impl EncodedBlueprint {
+
+    fn from<'a>(s: &'a str) -> EncodedBlueprint {
+        EncodedBlueprint(String::from(s))
+    }
+
+    fn encode(bp: &BlueprintObject) -> EncodedBlueprint {
+        let json: String = serde_json::to_string(bp).unwrap();
+        let mut compressor = ZlibEncoder::new(Vec::new(), Compression::default());
+        compressor.write_all(json.as_bytes()).unwrap();
+        let compressed_bytes: Vec<u8> = compressor.finish().unwrap();
+        let mut s: String = base64::encode(&compressed_bytes);
+        s.insert(0, '0');
+        EncodedBlueprint(s)
+    }
 
     fn get_base64(&self) -> &str {
         &self.0[1..]
@@ -210,10 +228,10 @@ impl EncodedBlueprint {
     }
 
     fn decode(&self) -> Result<BlueprintObject> {
-        let bytes: Vec<u8> = decode(self.get_base64()).unwrap();
-        let mut deflater = ZlibDecoder::new(&bytes[..]);
+        let compressed_bytes: Vec<u8> = base64::decode(self.get_base64()).unwrap();
+        let mut zlib_decompressor = ZlibDecoder::new(&compressed_bytes[..]);
         let mut decompressed = String::new();
-        deflater.read_to_string(&mut decompressed).unwrap();
+        zlib_decompressor.read_to_string(&mut decompressed).unwrap();
         let bp: BlueprintObject = serde_json::from_str(&decompressed)?;
         Ok(bp)
     }
